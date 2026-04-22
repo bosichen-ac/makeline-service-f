@@ -53,6 +53,30 @@ func NewMongoDBOrderRepo(mongoUri string, mongoDb string, mongoCollection string
 	return &MongoDBOrderRepo{collection}, nil
 }
 
+func (r *MongoDBOrderRepo) GetAllOrders() ([]Order, error) {
+	ctx := context.TODO()
+
+	var orders []Order
+
+	cursor, err := r.db.Find(ctx, bson.M{})
+	if err != nil {
+		log.Printf("Failed to find orders: %s", err)
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var order Order
+		if err := cursor.Decode(&order); err != nil {
+			log.Printf("Failed to decode order: %s", err)
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	return orders, nil
+}
+
 func (r *MongoDBOrderRepo) GetPendingOrders() ([]Order, error) {
 	ctx := context.TODO()
 

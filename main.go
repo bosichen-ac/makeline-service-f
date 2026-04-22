@@ -37,6 +37,7 @@ func main() {
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.Use(OrderMiddleware(orderService))
+	router.GET("/orders", getAllOrders)
 	router.GET("/order/fetch", fetchOrders)
 	router.GET("/order/:id", getOrder)
 	router.PUT("/order", updateOrder)
@@ -55,6 +56,25 @@ func OrderMiddleware(orderService *OrderService) gin.HandlerFunc {
 		c.Set("orderService", orderService)
 		c.Next()
 	}
+}
+
+// get all order history from mongo db
+func getAllOrders(c *gin.Context) {
+	client, ok := c.MustGet("orderService").(*OrderService)
+	if !ok {
+		log.Printf("Failed to get order service")
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	orders, err := client.repo.GetAllOrders()
+	if err != nil {
+		log.Printf("Failed to get orders: %s", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, orders)
 }
 
 // Fetches orders from the order queue and stores them in database

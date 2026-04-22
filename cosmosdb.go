@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"strings"
+	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
@@ -70,6 +71,11 @@ func NewCosmosDBOrderRepo(cosmosDbEndpoint string, dbName string, containerName 
 	}
 
 	return &CosmosDBOrderRepo{container, partitionKey}, nil
+}
+
+func (r *CosmosDBOrderRepo) GetAllOrders() ([]Order, error) {
+    // simplest version (so your app compiles)
+    return nil, fmt.Errorf("GetAllOrders not implemented for CosmosDB")
 }
 
 func (r *CosmosDBOrderRepo) GetPendingOrders() ([]Order, error) {

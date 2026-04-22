@@ -22,6 +22,7 @@ type Item struct {
 }
 
 type OrderRepo interface {
+	GetAllOrders() ([]Order, error)
 	GetPendingOrders() ([]Order, error)
 	GetOrder(id string) (Order, error)
 	InsertOrders(orders []Order) error
